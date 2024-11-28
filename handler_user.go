@@ -50,6 +50,34 @@ func handlerRegister(s *state, cmd command) error {
 	}
 
 	fmt.Println("User has been created!")
-	fmt.Printf("id: %v, time_created: %v, last_updated: %v, name: %v\n", user.ID, user.CreatedAt, user.UpdatedAt, user.Name)
+	printUser(user)
 	return nil
+}
+
+func handlerListUsers(s *state, cmd command) error {
+	if len(cmd.args) != 0 {
+		return fmt.Errorf("%v does not take any args", cmd.name)
+	}
+
+	users, err := s.db.GetUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("couldn't get users: %w", err)
+	}
+
+	for _, name := range users {
+		formattedName := fmt.Sprintf("* %s", name)
+		if name == s.cfg.CurrentUserName {
+			formattedName = formattedName + " (current)"
+		}
+		fmt.Println(formattedName)
+	}
+
+	return nil
+}
+
+func printUser(user database.User) {
+	fmt.Printf(" * id:			%v\n", user.ID)
+	fmt.Printf(" * name:		%v\n", user.Name)
+	fmt.Printf(" * created:		%v\n", user.CreatedAt)
+	fmt.Printf(" * last_updated:	%v\n", user.UpdatedAt)
 }
