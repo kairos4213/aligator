@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/kairos4213/aligator/internal/config"
 )
@@ -12,16 +13,26 @@ func main() {
 	if err != nil {
 		log.Fatalf("error reading config: %v", err)
 	}
-	fmt.Printf("Read config: %+v\n", cfg)
 
-	err = cfg.SetUser("test")
-	if err != nil {
-		log.Fatalf("error setting or writing user in config file: %v", err)
+	ste := state{cfg: &cfg}
+	cmds := commands{
+		registeredCmds: make(map[string]func(*state, command) error),
+	}
+	cmds.register("login", handlerLogin)
+
+	if len(os.Args) < 2 {
+		fmt.Printf("must provide at least one argument\n")
+		os.Exit(1)
 	}
 
-	cfg, err = config.Read()
-	if err != nil {
-		log.Fatalf("error reading config: %v", err)
+	cmdName := os.Args[1]
+	cmdArgs := os.Args[2:]
+	cmd := command{
+		name: cmdName,
+		args: cmdArgs,
 	}
-	fmt.Printf("Read config again: %+v\n", cfg)
+
+	if err = cmds.run(&ste, cmd); err != nil {
+		log.Fatal(err)
+	}
 }
