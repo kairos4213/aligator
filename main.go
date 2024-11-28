@@ -1,11 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
+	_ "github.com/lib/pq"
+
 	"github.com/kairos4213/aligator/internal/config"
+	"github.com/kairos4213/aligator/internal/database"
 )
 
 func main() {
@@ -14,11 +18,19 @@ func main() {
 		log.Fatalf("error reading config: %v", err)
 	}
 
-	ste := state{cfg: &cfg}
+	db, err := sql.Open("postgres", cfg.DbURL)
+	if err != nil {
+		log.Fatalf("error connecting to database: %v", err)
+	}
+	defer db.Close()
+	dbQueries := database.New(db)
+
+	ste := state{db: dbQueries, cfg: &cfg}
 	cmds := commands{
 		registeredCmds: make(map[string]func(*state, command) error),
 	}
 	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
 
 	if len(os.Args) < 2 {
 		fmt.Printf("must provide at least one argument\n")
