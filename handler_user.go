@@ -9,24 +9,6 @@ import (
 	"github.com/kairos4213/aligator/internal/database"
 )
 
-func handlerLogin(s *state, cmd command) error {
-	if len(cmd.args) != 1 {
-		return fmt.Errorf("%v takes <name> arg", cmd.name)
-	}
-
-	user, err := s.db.GetUser(context.Background(), cmd.args[0])
-	if err != nil {
-		return fmt.Errorf("couldn't find user: %w", err)
-	}
-
-	if err := s.cfg.SetUser(user.Name); err != nil {
-		return fmt.Errorf("couldn't set user: %w", err)
-	}
-
-	fmt.Printf("User %v logged in\n", user.Name)
-	return nil
-}
-
 func handlerRegister(s *state, cmd command) error {
 	if len(cmd.args) != 1 {
 		return fmt.Errorf("%v takes <name> arg", cmd.name)
@@ -54,6 +36,24 @@ func handlerRegister(s *state, cmd command) error {
 	return nil
 }
 
+func handlerLogin(s *state, cmd command) error {
+	if len(cmd.args) != 1 {
+		return fmt.Errorf("%v takes <name> arg", cmd.name)
+	}
+
+	user, err := s.db.GetUser(context.Background(), cmd.args[0])
+	if err != nil {
+		return fmt.Errorf("couldn't find user: %w", err)
+	}
+
+	if err := s.cfg.SetUser(user.Name); err != nil {
+		return fmt.Errorf("couldn't set user: %w", err)
+	}
+
+	fmt.Printf("User %v logged in\n", user.Name)
+	return nil
+}
+
 func handlerListUsers(s *state, cmd command) error {
 	if len(cmd.args) != 0 {
 		return fmt.Errorf("%v does not take any args", cmd.name)
@@ -76,8 +76,8 @@ func handlerListUsers(s *state, cmd command) error {
 }
 
 func printUser(user database.User) {
-	fmt.Printf(" * id:        %s\n", user.ID)
-	fmt.Printf(" * name:      %s\n", user.Name)
+	fmt.Printf(" * id:        %v\n", user.ID)
+	fmt.Printf(" * name:      %v\n", user.Name)
 	fmt.Printf(" * created:	  %v\n", user.CreatedAt)
 	fmt.Printf(" * updated:	  %v\n", user.UpdatedAt)
 }
