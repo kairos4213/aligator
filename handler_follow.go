@@ -19,19 +19,19 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 		return fmt.Errorf("error getting feed: %w", err)
 	}
 
-	feedFollowParams := database.CreateFeedFollowParams{
+	ffParams := database.CreateFeedFollowParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		UserID:    user.ID,
 		FeedID:    feed.ID,
 	}
-	feedFollow, err := s.db.CreateFeedFollow(context.Background(), feedFollowParams)
+	feedFollow, err := s.db.CreateFeedFollow(context.Background(), ffParams)
 	if err != nil {
 		return fmt.Errorf("error creating follow record: %w", err)
 	}
 
-	fmt.Printf("%s is now following %s\n", feedFollow.UserName, feedFollow.FeedName)
+	fmt.Printf("%s is now following %s\n", user.Name, feedFollow.FeedName)
 	return nil
 }
 

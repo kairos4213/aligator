@@ -31,10 +31,19 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 	printFeed(feed)
 	fmt.Println("")
 
-	urlArg := []string{cmd.args[1]}
-	if err := handlerFollow(s, command{name: "follow", args: urlArg}, user); err != nil {
-		return fmt.Errorf("error following feed: %w", err)
+	ffParams := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		UserID:    user.ID,
+		FeedID:    feed.ID,
 	}
+	feedFollow, err := s.db.CreateFeedFollow(context.Background(), ffParams)
+	if err != nil {
+		return fmt.Errorf("error creating follow record: %w", err)
+	}
+	fmt.Printf("%s is now following %s\n", user.Name, feedFollow.FeedName)
+
 	return nil
 }
 
