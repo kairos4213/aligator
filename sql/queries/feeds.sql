@@ -15,9 +15,9 @@ WHERE url = $1;
 
 -- name: MarkFeedFetched :exec
 UPDATE feeds
-SET updated_at = $1,
-    last_fetched_at = $2
-WHERE feeds.id = $3;
+SET updated_at = Now(),
+    last_fetched_at = Now()
+WHERE id = $1;
 
 -- name: GetNextFeedToFetch :one
 SELECT * FROM feeds
