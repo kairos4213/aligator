@@ -71,7 +71,6 @@ func handlerListFeeds(s *state, cmd command) error {
 		fmt.Printf(" * Feed:  %s\n", feedName)
 		fmt.Printf(" * URL:   %s\n", feedUrl)
 		fmt.Printf(" * User:  %s\n", userName)
-		fmt.Println("")
 	}
 	fmt.Println("-----------------------------------")
 

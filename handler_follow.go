@@ -35,6 +35,29 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 	return nil
 }
 
+func handlerUnfollow(s *state, cmd command, user database.User) error {
+	if len(cmd.args) != 1 {
+		return fmt.Errorf("%v takes <url> arg", cmd.name)
+	}
+
+	feed, err := s.db.GetFeedByURL(context.Background(), cmd.args[0])
+	if err != nil {
+		return fmt.Errorf("couldn't get feed: %w", err)
+	}
+
+	dfParams := database.DeleteFollowRecordParams{
+		UserID: user.ID,
+		FeedID: feed.ID,
+	}
+	err = s.db.DeleteFollowRecord(context.Background(), dfParams)
+	if err != nil {
+		return fmt.Errorf("error deleting follow record: %w", err)
+	}
+
+	fmt.Printf("%s is no longer following feed url: %s", user.Name, feed.Name)
+	return nil
+}
+
 func handlerFollowing(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 0 {
 		return fmt.Errorf("%v does not take any args", cmd.name)

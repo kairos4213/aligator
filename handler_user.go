@@ -76,8 +76,8 @@ func handlerListUsers(s *state, cmd command) error {
 }
 
 func printUser(user database.User) {
-	fmt.Printf(" * id:        %v\n", user.ID)
-	fmt.Printf(" * name:      %v\n", user.Name)
-	fmt.Printf(" * created:	  %v\n", user.CreatedAt)
-	fmt.Printf(" * updated:	  %v\n", user.UpdatedAt)
+	fmt.Printf(" * id:       %v\n", user.ID)
+	fmt.Printf(" * name:     %v\n", user.Name)
+	fmt.Printf(" * created:  %v\n", user.CreatedAt)
+	fmt.Printf(" * updated:  %v\n", user.UpdatedAt)
 }
