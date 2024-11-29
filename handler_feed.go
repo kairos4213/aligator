@@ -9,14 +9,9 @@ import (
 	"github.com/kairos4213/aligator/internal/database"
 )
 
-func handlerAddFeed(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 2 {
 		return fmt.Errorf("%v takes two args: <feed_name> <url>", cmd.name)
-	}
-
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("couldn't find user: %w", err)
 	}
 
 	createFeedParams := database.CreateFeedParams{
@@ -37,7 +32,7 @@ func handlerAddFeed(s *state, cmd command) error {
 	fmt.Println("")
 
 	urlArg := []string{cmd.args[1]}
-	if err := handlerFollow(s, command{name: "follow", args: urlArg}); err != nil {
+	if err := handlerFollow(s, command{name: "follow", args: urlArg}, user); err != nil {
 		return fmt.Errorf("error following feed: %w", err)
 	}
 	return nil
