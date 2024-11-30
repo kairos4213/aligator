@@ -3,7 +3,7 @@
 Aligator is a CLI tool that aggregates RRS feeds, and is built in Go.
 
 Aligator allows users to:
- 
+
  * Add RSS feeds from across the internet to be collected
  * Store the collected posts in a PostgreSQL database
  * Follow and unfollow RSS feeds that other users have added
@@ -82,7 +82,48 @@ machine. Run this command from the project directory you plan to develop in:
   git clone git@github.com:kairos4213/aligator.git
   ```
 
-### 2. Install Aligator
+### 2. Set Up Config File
+
+Aligator is a multi-user CLI application. There's no server (other than the database),
+so it's only intended for local use. 
+
+To get started, you will need to create a config file in your home directory.
+Name it ".gatorconfig.json" and put your database connection string into a json
+field labeled "db_url" with ssl mode query set to disable. It will look something
+like this:
+
+  ```
+  {
+    "db_url": "protocol://username:password@host:port/gator?sslmode=disable"
+  }
+  ```
+
+### 3. Run Database Migrations
+
+Aligator uses [Goose](https://github.com/pressly/goose) for it's migration tool.
+Install Goose with the following command:
+
+  ```
+  go install github.com/pressly/goose/v3/cmd/goose@latest
+  ```
+Run `goose -version` to make sure it installed correctly.
+
+In the main project directory, there is a `sql/schema` directory. Change into this
+directory and run:
+
+  ```
+  goose postgres <connection_string> up
+  ```
+
+This should set up your database properly, but if for some reason you're having
+issues, or just want to run the down migrations to an earlier version of the database
+use the down migration command as desired:
+
+  ```
+  goose postgres <connection_string> down
+  ```
+
+### 3. Install Aligator
 
 To install aligator where you will be able to run it's commands from any directory
 on your machine, run this in your terminal:
@@ -93,13 +134,76 @@ on your machine, run this in your terminal:
 
 ## Usage
 
+### register
+Adds a new user to the database
+  ```
+  $ aligator register <username>
+  $ aligator register bob
+  ```
 
+### login
+Sets current user
+  ```
+  $ aligator login <username> 
+  $ aligator login bob
+  ```
 
-A few examples of useful commands and/or tasks.
+### users
+Lists all users in the database
+  ```
+  $ aligator users 
+  ```
 
-```
-$ First example
-$ Second example
-$ And keep this in mind
-```
+### addfeed
+Adds a feed to the database
+  ```
+  $ aligator addfeed <feedname> <url>
+  $ aligator addfeed "Boot.dev Blog" "https://blog.boot.dev/"
+  ```
+
+### feeds
+Prints all feeds in database
+  ```
+  $ aligator feeds
+  ```
+
+### follow
+Allows user to follow a feed
+  ```
+  $ aligator follow <url>
+  $ aligator follow "https://blog.boot.dev/"
+  ```
+
+### following
+Prints all the feeds a user is following
+  ```
+  $ aligator following
+  ```
+
+### unfollow
+Allows user to unfollow a feed
+  ```
+  $ aligator unfollow <url>
+  $ aligator unfollow "https://blog.boot.dev/"
+  ```
+
+### agg
+Begins to aggregate feeds the user is following and save posts to database. Meant to be ran in background. Time between requests on aggregator is set with a duration string format.
+  ```
+  $ aligator agg <time_between_requests>
+  $ aligator agg 2m
+  ```
+
+### browse
+Returns the specified number of posts to view from feeds the user follows.
+  ```
+  $ aligator browse <num_of_posts>
+  $ aligator browse 10
+  ```
+
+### reset
+Allows user to reset the database. Purpose is for testing/development -- and those who like to watch the world burn.
+  ```
+  $ aligator reset
+  ```
 
